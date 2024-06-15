@@ -1,113 +1,146 @@
-import Image from "next/image";
+'use client';
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  useToast,
+} from '@chakra-ui/react';
+import { useState } from 'react';
 
 export default function Home() {
+  const [stockPrice, setStockPrice] = useState(0);
+  const [dividend, setDividend] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+  const toast = useToast();
+
+  const handleStockPriceChange = (_val: string, valNum: number) => {
+    setShowResult(false);
+    setStockPrice(valNum);
+  };
+  const handleDividendChange = (_val: string, valNum: number) => {
+    setShowResult(false);
+    setDividend(valNum);
+  };
+  const calculate = () => {
+    const storkPriceNumber = Number(stockPrice);
+    const dividendNumber = Number(dividend);
+    if (isNaN(storkPriceNumber) || isNaN(dividendNumber)) {
+      toast({
+        title: 'エラー',
+        description: '数値を入力してください',
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+    if (storkPriceNumber === 0) {
+      toast({
+        title: 'エラー',
+        description: '株価は0より大きい値を入力してください',
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+    setShowResult(true);
+  };
+  const fluctuationRates = [
+    { rate: -0.5, label: '-50%' },
+    { rate: -0.4, label: '-40%' },
+    { rate: -0.3, label: '-30%' },
+    { rate: -0.2, label: '-20%' },
+    { rate: -0.1, label: '-10%' },
+    { rate: -0.05, label: '-5%' },
+    { rate: 0, label: '±0%' },
+    { rate: 0.05, label: '+5%' },
+    { rate: 0.1, label: '+10%' },
+    { rate: 0.2, label: '+20%' },
+    { rate: 0.3, label: '+30%' },
+    { rate: 0.4, label: '+40%' },
+    { rate: 0.5, label: '+50%' },
+  ];
+  const stockPriceWithFluctuation = (rate: number) => {
+    return (stockPrice * (1 + rate)).toFixed(0);
+  };
+  const dividendYieldWithFluctuation = (rate: number) => {
+    return ((dividend / (stockPrice * (1 + rate))) * 100).toFixed(2);
+  };
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+    <main className=" min-h-screen flex-col items-center justify-between p-12">
+      <form>
+        <Stack spacing={5}>
+          <Heading>配当利回りシミュレータ</Heading>
+          <Text fontSize="md">
+            株価の変動に対する配当利回りをシミュレーションします
+          </Text>
+          <FormControl>
+            <FormLabel>株価</FormLabel>
+            <NumberInput isRequired onChange={handleStockPriceChange}>
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </FormControl>
+          <FormControl>
+            <FormLabel>年間配当金額</FormLabel>
+            <NumberInput isRequired onChange={handleDividendChange}>
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </FormControl>
+          <Stack direction="row" align="center" justify="center">
+            <Button colorScheme="teal" size="md" onClick={() => calculate()}>
+              計算する
+            </Button>
+          </Stack>
+        </Stack>
+      </form>
+      {showResult && (
+        <TableContainer mt={8}>
+          <Table variant="striped" colorScheme="teal">
+            <Thead>
+              <Tr>
+                <Th>株価変動割合</Th>
+                <Th>株価</Th>
+                <Th isNumeric>配当利回り</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {fluctuationRates.map((rate) => (
+                <Tr key={rate.rate}>
+                  <Td>{rate.label}</Td>
+                  <Td>{`${stockPriceWithFluctuation(rate.rate)}`}</Td>
+                  <Td isNumeric>
+                    {`${dividendYieldWithFluctuation(rate.rate)}%`}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      )}
     </main>
   );
 }
